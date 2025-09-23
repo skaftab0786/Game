@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fruit Ninja Mini</title>
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(to right, #fceabb, #f8b500);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .controls {
+      margin: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 0 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #ff6f61;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #ff3b2e;
+      transform: scale(1.1);
+    }
+
+    canvas {
+      border: 2px solid #333;
+      background-color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <button id="startBtn">Start</button>
+    <button id="pauseBtn">Pause</button>
+    <button id="resumeBtn">Resume</button>
+  </div>
+  <canvas id="gameCanvas" width="800" height="500"></canvas>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let fruits = [];
+    let isRunning = false;
+    let animationId;
+    let fruitInterval;
+
+    function createFruit() {
+      const x = Math.random() * canvas.width;
+      const y = canvas.height;
+      const radius = 20 + Math.random() * 20;
+      const color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+      const speed = 2 + Math.random() * 3;
+      fruits.push({ x, y, radius, color, speed });
+    }
+
+    function drawFruit(fruit) {
+      ctx.beginPath();
+      ctx.arc(fruit.x, fruit.y, fruit.radius, 0, Math.PI * 2);
+      ctx.fillStyle = fruit.color;
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    function updateFruits() {
+      fruits.forEach(fruit => {
+        fruit.y -= fruit.speed;
+      });
+      fruits = fruits.filter(fruit => fruit.y + fruit.radius > 0);
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      fruits.forEach(drawFruit);
+      updateFruits();
+      animationId = requestAnimationFrame(draw);
+    }
+
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      fruits = fruits.filter(fruit => {
+        const dx = fruit.x - mouseX;
+        const dy = fruit.y - mouseY;
+        return Math.sqrt(dx * dx + dy * dy) > fruit.radius;
+      });
+    });
+
+    document.getElementById('startBtn').addEventListener('click', () => {
+      if (!isRunning) {
+        isRunning = true;
+        draw();
+        fruitInterval = setInterval(() => {
+          if (isRunning) createFruit();
+        }, 1000);
+      }
+    });
+
+    document.getElementById('pauseBtn').addEventListener('click', () => {
+      isRunning = false;
+      cancelAnimationFrame(animationId);
+      clearInterval(fruitInterval);
+    });
+
+    document.getElementById('resumeBtn').addEventListener('click', () => {
+      if (!isRunning) {
+        isRunning = true;
+        draw();
+        fruitInterval = setInterval(() => {
+          if (isRunning) createFruit();
+        }, 1000);
+      }
+    });
+  </script>
+</body>
+</html>
