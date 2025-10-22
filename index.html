@@ -1,39 +1,154 @@
+html_code = """
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>কোরআন শরীফ - পারা ১</title>
+  <title>Chess Game vs Computer</title>
   <style>
     body {
-      font-family: 'SolaimanLipi', sans-serif;
-      background-color: #f0f8ff;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #1e1e2f;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       padding: 20px;
-      line-height: 1.8;
     }
-    .surah {
-      margin-bottom: 30px;
-      padding: 15px;
-      background-color: #fff;
-      border-left: 5px solid #2e8b57;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    h1 {
+      margin-bottom: 20px;
     }
-    h2 {
-      color: #2e8b57;
+    #board {
+      display: grid;
+      grid-template-columns: repeat(8, 60px);
+      grid-template-rows: repeat(8, 60px);
+      gap: 2px;
+      border: 4px solid #444;
     }
-    .ayah {
-      margin-bottom: 10px;
+    .cell {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      cursor: pointer;
+    }
+    .white {
+      background-color: #f0d9b5;
+    }
+    .black {
+      background-color: #b58863;
+    }
+    .controls {
+      margin-top: 20px;
+    }
+    button {
+      margin: 0 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #444;
+      color: #fff;
+    }
+    button:hover {
+      background-color: #666;
     }
   </style>
 </head>
 <body>
-  <h1>পবিত্র কোরআন শরীফ - পারা ১</h1>
+  <h1>Chess Game vs Computer</h1>
+  <div id="board"></div>
+  <div class="controls">
+    <button onclick="pauseGame()">Pause</button>
+    <button onclick="resumeGame()">Resume</button>
+    <button onclick="restartGame()">Restart</button>
+  </div>
 
-  <div class="surah">
-    <h2>সূরা আল-ফাতিহা</h2>
-    <div class="ayah">১. শুরু করছি আল্লাহর নামে যিনি পরম করুণাময়, অতি দয়ালু।</div>
-    <div class="ayah">২. সকল প্রশংসা আল্লাহর জন্য, যিনি সকল সৃষ্টি জগতের পালনকর্তা।</div>
-    <div class="ayah">৩. যিনি পরম করুণাময়, অতি দয়ালু।</div>
-    <div class="ayah">৪. বিচার দিনের মালিক।</div>
-    <div class="ayah">৫. আমরা শুধু তোমারই ইবাদত করি এবং শুধু তোমারই সাহায্য চাই।</div>
-    <div class="ayah">৬. আমাদের সরল পথ দেখাও।</div>
-   
+  <script>
+    const board = document.getElementById('board');
+    let gamePaused = false;
+
+    const initialBoard = [
+      ["♜","♞","♝","♛","♚","♝","♞","♜"],
+      ["♟","♟","♟","♟","♟","♟","♟","♟"],
+      ["","","","","","","",""],
+      ["","","","","","","",""],
+      ["","","","","","","",""],
+      ["","","","","","","",""],
+      ["♙","♙","♙","♙","♙","♙","♙","♙"],
+      ["♖","♘","♗","♕","♔","♗","♘","♖"]
+    ];
+
+    let currentBoard = JSON.parse(JSON.stringify(initialBoard));
+
+    function renderBoard() {
+      board.innerHTML = '';
+      for (let i = 0; i < 8; i++) {
+        for (let j = 0; j < 8; j++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell ' + ((i + j) % 2 === 0 ? 'white' : 'black');
+          cell.textContent = currentBoard[i][j];
+          cell.dataset.row = i;
+          cell.dataset.col = j;
+          cell.onclick = () => handleClick(i, j);
+          board.appendChild(cell);
+        }
+      }
+    }
+
+    let selected = null;
+
+    function handleClick(row, col) {
+      if (gamePaused) return;
+      const piece = currentBoard[row][col];
+      if (selected) {
+        currentBoard[row][col] = currentBoard[selected.row][selected.col];
+        currentBoard[selected.row][selected.col] = "";
+        selected = null;
+        renderBoard();
+        setTimeout(computerMove, 500);
+      } else if (piece !== "") {
+        selected = { row, col };
+      }
+    }
+
+    function computerMove() {
+      if (gamePaused) return;
+      // Simple AI: move first black pawn forward if possible
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 8; j++) {
+          if (currentBoard[i][j] === "♟" && currentBoard[i+1][j] === "") {
+            currentBoard[i+1][j] = "♟";
+            currentBoard[i][j] = "";
+            renderBoard();
+            return;
+          }
+        }
+      }
+    }
+
+    function pauseGame() {
+      gamePaused = true;
+    }
+
+    function resumeGame() {
+      gamePaused = false;
+    }
+
+    function restartGame() {
+      currentBoard = JSON.parse(JSON.stringify(initialBoard));
+      selected = null;
+      gamePaused = false;
+      renderBoard();
+    }
+
+    renderBoard();
+  </script>
+</body>
+</html>
+"""
+
+with open("chess_game_vs_computer.html", "w", encoding="utf-8") as f:
+    f.write(html_code)
