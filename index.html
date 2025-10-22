@@ -1,99 +1,80 @@
-html_code = """
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
   <meta charset="UTF-8">
-  <title>Chess Game vs Computer</title>
+  <title>Funny Math DHA DHA Question</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
+      font-family: 'Comic Sans MS', cursive;
+      background-color: #fff8dc;
       text-align: center;
-      padding: 20px;
+      padding: 30px;
+      color: #333;
     }
-    #board {
-      width: 480px;
-      margin: 20px auto;
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background-color: #fefefe;
+      border: 5px dashed #ff4500;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+    h1 {
+      color: #ff4500;
+      font-size: 2.5em;
+    }
+    .question {
+      font-size: 1.5em;
+      margin: 20px 0;
+    }
+    .answer {
+      font-size: 1.2em;
+      color: green;
+      margin-top: 20px;
+      display: none;
+    }
+    .footer {
+      margin-top: 40px;
+      font-style: italic;
+      color: #888;
     }
     button {
-      margin: 5px;
+      background-color: #ff4500;
+      color: white;
+      border: none;
       padding: 10px 20px;
       font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #e63900;
     }
   </style>
-  <link rel="stylesheet" href="https://unpkg.com/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css" />
 </head>
 <body>
-  <h1>Chess Game vs Computer</h1>
-  <div id="board"></div>
-  <button onclick="restartGame()">Restart</button>
-  <button onclick="pauseGame()">Pause</button>
-  <button onclick="resumeGame()">Resume</button>
+  <div class="container">
+    <h1>🔥 DHA DHA Math Challenge 🔥</h1>
+    <div class="question">
+      যদি ১+১ = ১১ হয়, তাহলে<br>
+      ২+২ = ❓<br><br>
+      <strong>১০০ নম্বরের প্রশ্ন!</strong>
+    </div>
+    <button onclick="toggleAnswer()">উত্তর দেখাও / লুকাও</button>
+    <div class="answer" id="answer">
+      উত্তর: ২২ 😆 (কারণ DHA DHA লজিকে সব কিছু ডাবল!)
+    </div>
+    <div class="footer">
+      এই প্রশ্নের উত্তর দিতে পারলে আপনি একজন "Math Ninja"! 🥷
+    </div>
+  </div>
 
-  <script src="https://unpkg.com/chess.js@0.10.3/chess.min.js"></script>
-  <script src="https://unpkg.com/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
   <script>
-    var board = null;
-    var game = new Chess();
-    var paused = false;
-
-    function onDragStart(source, piece, position, orientation) {
-      if (game.game_over() || paused || piece.search(/^b/) !== -1) {
-        return false;
-      }
+    function toggleAnswer() {
+      var ans = document.getElementById("answer");
+      ans.style.display = (ans.style.display === "none") ? "block" : "none";
     }
-
-    function makeRandomMove() {
-      var possibleMoves = game.moves();
-      if (game.game_over() || paused || possibleMoves.length === 0) return;
-
-      var move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
-      game.move(move);
-      board.position(game.fen());
-    }
-
-    function onDrop(source, target) {
-      var move = game.move({
-        from: source,
-        to: target,
-        promotion: 'q'
-      });
-
-      if (move === null) return 'snapback';
-
-      window.setTimeout(makeRandomMove, 250);
-    }
-
-    function onSnapEnd() {
-      board.position(game.fen());
-    }
-
-    function restartGame() {
-      game.reset();
-      board.position(game.fen());
-      paused = false;
-    }
-
-    function pauseGame() {
-      paused = true;
-    }
-
-    function resumeGame() {
-      paused = false;
-    }
-
-    var config = {
-      draggable: true,
-      position: 'start',
-      onDragStart: onDragStart,
-      onDrop: onDrop,
-      onSnapEnd: onSnapEnd
-    };
-    board = Chessboard('board', config);
   </script>
 </body>
 </html>
-"""
-
-with open("chess_game_vs_computer.html", "w", encoding="utf-8") as file:
-    file.write(html_code)
